@@ -1,2 +1,5 @@
 # AI-Student-Platform
-Our AI-powered platform is designed to help students bridge the gap between their current skills and their career aspirations through a structured and personalized approach.
+### Current status
+- Personalized quiz to recommend careers, resources (general), and next steps.
+- Uses gemini API.
+- Contains JS and Python file with same purpose. JS might make it easier to develop the web app.
