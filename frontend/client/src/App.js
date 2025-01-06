@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import AssessmentForm from './components/AssessmentForm';
 import CareerRecommendations from './components/CareerRecommendations';
 import SkillTest from './components/SkillTest';
+import ResultsPage from './components/ResultsPage';
 import Loading from './components/Loading';
 import axios from 'axios';
 
@@ -117,6 +118,7 @@ function App() {
             <Route path="/recommendations"
                    element={<CareerRecommendations recommendations={recommendations} />} />
             <Route path="/skill-test" element={<SkillTest/>}/>
+            <Route path="/results" element={<ResultsPage />} />
         </Routes>
     );
 }
