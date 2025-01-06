@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loading from './Loading';
@@ -7,37 +7,38 @@ const SkillTest = () => {
     const [questions, setQuestions] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [userAnswers, setUserAnswers] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [selectedCareer, setSelectedCareer] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
-    const recommendations = localStorage.getItem('recommendations') ? JSON.parse(localStorage.getItem('recommendations')) : null;
+    const recommendations = localStorage.getItem('recommendations')
+        ? JSON.parse(localStorage.getItem('recommendations'))
+        : null;
 
-    useEffect(() => {
-        if (!recommendations || !recommendations.career_paths || recommendations.career_paths.length === 0) {
-            navigate('/')
+    const fetchSkillTest = async () => {
+        if (!selectedCareer) {
+            setError('Please select a career path to proceed.');
             return;
         }
-        setLoading(true);
-        const fetchSkillTest = async () => {
-            const chosenCareer = recommendations.career_paths[0].title;
-            try {
-                const response = await axios.post('http://localhost:5000/test-skills', { chosenCareer });
-                if (response.data){
-                    setQuestions(response.data);
-                } else {
-                    setError('Failed to fetch skill test.')
-                }
 
-            } catch (err) {
-                setError(err.message || 'Failed to fetch skill test.');
-                console.error("Error fetching skill test", err);
-            } finally {
-                setLoading(false);
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await axios.post('http://localhost:5000/test-skills', { chosenCareer: selectedCareer });
+            if (response.data) {
+                setQuestions(response.data);
+            } else {
+                setError('Failed to fetch skill test.');
             }
-        };
-        fetchSkillTest();
-    }, [navigate, recommendations]);
+        } catch (err) {
+            setError(err.message || 'Failed to fetch skill test.');
+            console.error('Error fetching skill test', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAnswerSelect = (answer) => {
         setUserAnswers({ ...userAnswers, [currentQuestionIndex]: answer });
@@ -47,27 +48,26 @@ const SkillTest = () => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
-            navigate('/results');
+            const totalMarks = questions.reduce((score, question, index) => {
+                return question.correct_answer === userAnswers[index] ? score + 1 : score;
+            }, 0);
+            navigate('/results', { state: { totalMarks, totalQuestions: questions.length } });
         }
     };
+    
+
     const handlePreviousQuestion = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(currentQuestionIndex - 1);
         }
     };
-    if (loading) return <Loading/>
-    if (error) {
+
+    if (!recommendations || !recommendations.career_paths || recommendations.career_paths.length === 0) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <p className="text-red-500 text-2xl">{error}</p>
+                <p className="text-gray-700 text-xl">No career recommendations found. Please start a new assessment.</p>
             </div>
         );
-    }
-
-    if (!questions || questions.length === 0) {
-        return <div className="flex justify-center items-center h-screen">
-            <p className="text-gray-700 text-xl">No skill test data found</p>
-        </div>
     }
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -75,42 +75,92 @@ const SkillTest = () => {
     return (
         <div className="container mx-auto py-8">
             <h2 className="text-3xl font-bold text-center mb-8">Skill Test</h2>
-            <div className="bg-white shadow-md rounded p-6">
-                <h3 className="text-xl font-semibold mb-4">
-                    Question {currentQuestionIndex + 1} of {questions.length}
-                </h3>
-                <p className="text-lg mb-4">{currentQuestion.question}</p>
-                <div className="mb-6">
-                    {Object.entries(currentQuestion.options).map(([key, option]) => (
+            {!questions.length ? (
+                <div className="bg-white shadow-md rounded p-6">
+                    <h3 className="text-xl font-semibold mb-4">Select a Career Path</h3>
+                    <ul className="mb-4">
+                        {recommendations.career_paths.map((path, index) => (
+                            <li key={index}>
+                                <button
+                                    onClick={() => setSelectedCareer(path.title)}
+                                    className={`block w-full text-left bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-4 py-2 mb-2 ${
+                                        selectedCareer === path.title ? 'bg-blue-200' : ''
+                                    }`}
+                                >
+                                    {path.title}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="flex justify-center">
                         <button
-                            key={key}
-                            onClick={() => handleAnswerSelect(key)}
-                            className={`block w-full bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-4 py-2 mb-2 text-left ${
-                                userAnswers[currentQuestionIndex] === key ? 'bg-blue-200' : ''
-                            }`}
+                            onClick={fetchSkillTest}
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            disabled={!selectedCareer || loading}
                         >
-                            {key}: {option}
+                            {loading ? 'Loading...' : 'Test Skills'}
                         </button>
-                    ))}
+                    </div>
+                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
                 </div>
-                <div className="flex justify-between">
-                    {currentQuestionIndex > 0 && (
+            ) : (
+                <div className="bg-white shadow-md rounded p-6">
+                    <h3 className="text-xl font-semibold mb-4">
+                        Question {currentQuestionIndex + 1} of {questions.length}
+                    </h3>
+                    <p className="text-lg mb-4">{currentQuestion.question}</p>
+                    <div className="mb-6">
+    {Object.entries(currentQuestion.options).map(([key, option]) => (
+        <button
+            key={key}
+            onClick={() => handleAnswerSelect(key)}
+            className={`block w-full border rounded px-4 py-2 mb-2 text-left ${
+                userAnswers[currentQuestionIndex]
+                    ? key === currentQuestion.correct_answer
+                        ? 'bg-green-200 border-green-500'
+                        : userAnswers[currentQuestionIndex] === key
+                        ? 'bg-red-200 border-red-500'
+                        : 'bg-gray-100'
+                    : userAnswers[currentQuestionIndex] === key
+                    ? 'bg-blue-200 border-blue-500'
+                    : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+            disabled={!!userAnswers[currentQuestionIndex]} // Disable buttons after selection
+        >
+            {key}: {option}
+        </button>
+    ))}
+</div>
+{userAnswers[currentQuestionIndex] && (
+    <div className="mt-4">
+        <p className="text-green-700 font-bold">
+            Correct Answer: {currentQuestion.correct_answer}
+        </p>
+        <p className="text-gray-700 italic mt-2">
+            Explanation: {currentQuestion.explanation}
+        </p>
+    </div>
+)}
+
+                    <div className="flex justify-between">
+                        {currentQuestionIndex > 0 && (
+                            <button
+                                onClick={handlePreviousQuestion}
+                                className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            >
+                                Previous
+                            </button>
+                        )}
                         <button
-                            onClick={handlePreviousQuestion}
-                            className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            onClick={handleNextQuestion}
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            disabled={!userAnswers[currentQuestionIndex]}
                         >
-                            Previous
+                            {currentQuestionIndex === questions.length - 1 ? 'View Results' : 'Next'}
                         </button>
-                    )}
-                    <button
-                        onClick={handleNextQuestion}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        disabled={!userAnswers[currentQuestionIndex]}
-                    >
-                        {currentQuestionIndex === questions.length - 1 ? 'View Results' : 'Next'}
-                    </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
