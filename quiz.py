@@ -13,10 +13,10 @@ class CareerAssessment:
     def _generate_questions(self, user_description):
         prompt = f"""
         Based on this user description: "{user_description}"
-        Generate a career assessment questionnaire with 9 questions across 3 areas:
+        Generate a career assessment questionnaire with 9 non-repeating questions across 3 areas. Ensure no two questions are the same:
         1. Interests
         2. Academic/Skills
-        3. Work Style
+        3. Workstyle
         
         Return ONLY valid JSON matching this structure:
         {{

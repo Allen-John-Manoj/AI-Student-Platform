@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Career Assessment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -13,7 +13,8 @@
             background-size: cover;
             font-family: 'Lora', serif;
             color: #4a3628;
-            font-size: 1.2rem;
+            border: 1px solid rgba(74, 54, 40, 0);
+            font-size: bold;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,11 +32,16 @@
         }
 
         h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Lora', serif;
             color: #2c1810;
             font-size: 2.7rem;
             margin-bottom: 30px;
             text-align: center;
+        }
+
+        p {
+            font-size: 1.15rem;
+            font-weight: bold;
         }
         textarea {
             width: 100%;
@@ -49,9 +55,8 @@
             color: #000000;
             margin-bottom: 20px;
             resize: vertical;
-            box-sizing: border-box; /* Ensures padding does not add extra width */
+            box-sizing: border-box;
         }
-
 
         button {
             background: #8b5e3c;
@@ -59,12 +64,14 @@
             border: none;
             padding: 12px 30px;
             border-radius: 8px;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Lora', serif;
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            gap: 50px;
         }
 
         button:hover {
@@ -79,7 +86,7 @@
 
         .button-loading {
             position: relative;
-            color: transparent; /* Hides the text */
+            color: transparent;
         }
 
         .button-loading::after {
@@ -94,14 +101,13 @@
             border-top: 2px solid transparent;
             border-radius: 50%;
             animation: button-loading-spinner 1s linear infinite;
-            z-index: 1; /* Ensure spinner is above the text */
+            z-index: 1;
         }
 
         @keyframes button-loading-spinner {
             from { transform: translate(-50%, -50%) rotate(0turn); }
             to { transform: translate(-50%, -50%) rotate(1turn); }
         }
-
 
         .question {
             background: rgba(255, 255, 255, 0.8);
@@ -111,42 +117,60 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
+            font-size: 2.5rem;
         }
 
         .options {
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 30px;
+            margin-bottom: 30px;
         }
 
         .option-button {
-            background: rgba(139, 94, 60, 0.247);
+            background: rgba(139, 94, 60, 0.281);
+            border: 1px solid #8b5e3c;
+            backdrop-filter: blur(10px);
             color: #000000;
-            border: 1px solid rgba(139, 94, 60, 0.377);
-            padding: 15px 20px;
-            font-weight: bold;
-            text-align: left;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            font-weight: 400rem;
+            cursor: pointer;
             transition: all 0.3s ease;
+            text-align: left;
+            width: 100%;
+            gap: 15px;
         }
 
         .option-button:hover {
-            background: rgba(139, 94, 60, 0.384);
+            background: rgba(161, 112, 47, 0.274);
         }
 
         .option-button.selected {
-            background: #8b5e3c;
-            border-color: #8b5e3c;
-            color: white;
+            background: #ffffff;
+            border-color: #ffffff;
+        }
+
+        /* Update the disabled state to not affect visibility */
+        .option-button:disabled {
+            cursor: pointer;
+            opacity: 1;
+            background: rgba(161, 112, 47, 0.274);
+            color: #000000;
         }
 
         .career-card {
-            background: rgba(255, 255, 255, 0.9);
             padding: 25px;
             margin: 15px 0;
             border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 1px solid rgba(139, 94, 60, 0.2);
+            background: rgba(139, 94, 60, 0.281);
+            border: 1px solid #8b5e3c;
+            backdrop-filter: blur(10px);
         }
 
         .career-card:hover {
@@ -155,14 +179,15 @@
         }
 
         .career-card.selected {
-            background: rgba(139, 94, 60, 0.281);
-            border: 1px solid #8b5e3c;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 94, 60, 0.2);
         }
 
         .career-card h3 {
             color: #2c1810;
-            font-family: 'Playfair Display', serif;
+            font-family: 'Lora', serif;
             margin: 0 0 15px 0;
         }
 
@@ -199,7 +224,7 @@
         }
 
         .score {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Lora', serif;
             font-size: 1.5rem;
             color: #2c1810;
             text-align: center;
@@ -207,8 +232,6 @@
         }
 
         #feedback {
-            padding: 15px;
-            margin: 15px 0;
             border-radius: 8px;
             font-style: italic;
         }
@@ -238,6 +261,11 @@
 
             .career-card {
                 padding: 15px;
+            }
+            
+            .option-button {
+                min-height: 70px;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -278,20 +306,20 @@
           </div>
       </section>
 
-      <!-- Skills Test Section -->
       <section id="skills-test" class="section">
-          <h2 id="skills-title"></h2>
-          <div id="skill-question" class="question"></div>
-          <div id="skill-options" class="options"></div>
-          <div id="feedback"></div>
-          <div id="score" class="score"></div>
-          <div id="final-buttons" style="display: none;" class="button-group">
-              <button onclick="retrySkillTest()">Try Again</button>
-              <button onclick="showSection('recommendations')" class="button-secondary">Back to Careers</button>
-          </div>
-          <button onclick="nextSkillQuestion()" id="next-skill-button">Next Question</button>
-      </section>
-  </div>
+        <h2 id="skills-title"></h2>
+        <div class="question">
+            <p id="skill-question"></p>
+            <div id="skill-options" class="options"></div>
+        <div id="feedback"></div>
+        <div id="score" class="score"></div></div>
+        <div id="final-buttons" class="button-group">
+            <button onclick="retrySkillTest()">Try Again</button>
+            <button onclick="showSection('recommendations')" class="button-secondary">Back to Careers</button>
+        </div>
+        <button onclick="nextSkillQuestion()" id="next-skill-button">Next Question</button>
+    </section>
+</div>
 
   <script>
     let currentSection = 'intro';
@@ -457,8 +485,8 @@
                     card.innerHTML = `
                         <input type="radio" name="career" value="${index}" id="career${index}" style="display: none;">
                         <h3>${index + 1}. ${career.title}</h3>
-                        <p>${career.description}</p>
-                        <p><strong>Required Skills:</strong> ${career.required_skills.join(', ')}</p>
+                        <p style="font-weight: 400;">${career.description}</p>
+                        <p style="font-weight: 400;"><strong>Required Skills:</strong> ${career.required_skills.join(', ')}</p>
                     `;
                     
                     card.addEventListener('click', () => {
@@ -516,10 +544,10 @@
         displaySkillQuestion();
         
         document.getElementById('final-buttons').style.display = 'none';
-        document.getElementById('next-skill-button').style.display = 'block';
-        document.getElementById('skill-question').style.display = 'block';
-        document.getElementById('skill-options').style.display = 'block';
-        document.getElementById('feedback').style.display = 'block';
+        document.getElementById('next-skill-button').style.display = 'flex';
+        document.getElementById('skill-question').style.display = 'flex';
+        document.getElementById('skill-options').style.display = 'flex';
+        document.getElementById('feedback').style.display = 'flex';
         document.getElementById('score').textContent = '';
     } catch (error) {
         console.error('Error:', error);
@@ -529,26 +557,28 @@
     }
 }
 
-        function displaySkillQuestion() {
-            const question = skillQuestions.questions[currentSkillQuestion];
-            document.getElementById('skills-title').textContent = `Skills Test Question ${currentSkillQuestion + 1}/${skillQuestions.questions.length}`;
-            document.getElementById('skill-question').textContent = question.question;
-            
-            const optionsContainer = document.getElementById('skill-options');
-            optionsContainer.innerHTML = '';
-            
-            Object.entries(question.options).forEach(([key, value]) => {
-                const button = document.createElement('button');
-                button.className = 'option-button';
-                button.textContent = `${key}. ${value}`;
-                button.onclick = () => selectSkillOption(key, question.correct_answer, question.explanation);
-                optionsContainer.appendChild(button);
-            });
+function displaySkillQuestion() {
+    const question = skillQuestions.questions[currentSkillQuestion];
+    document.getElementById('skills-title').textContent = `Skills Test Question ${currentSkillQuestion + 1}/${skillQuestions.questions.length}`;
+    document.getElementById('skill-question').textContent = question.question;
+    
+    const optionsContainer = document.getElementById('skill-options');
+    optionsContainer.innerHTML = '';
+    
+    Object.entries(question.options).forEach(([key, value]) => {
+        const buttonWrapper = document.createElement('div'); // Create wrapper div
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.textContent = `${key}. ${value}`;
+        button.onclick = () => selectSkillOption(key, question.correct_answer, question.explanation);
+        buttonWrapper.appendChild(button);
+        optionsContainer.appendChild(buttonWrapper);
+    });
 
-            document.getElementById('feedback').innerHTML = '';
-            document.getElementById('next-skill-button').style.display = 'none';
-            updateProgress(currentSkillQuestion + 1, skillQuestions.questions.length);
-        }
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('next-skill-button').style.display = 'none';
+    updateProgress(currentSkillQuestion + 1, skillQuestions.questions.length);
+}
 
         function selectSkillOption(selected, correct, explanation) {
             const buttons = document.querySelectorAll('.option-button');
@@ -556,18 +586,20 @@
                 button.disabled = true;
                 if (button.textContent.startsWith(selected)) {
                     button.classList.add('selected');
+                    button.disabled = false;
                 }
                 if (button.textContent.startsWith(correct)) {
-                    button.style.backgroundColor = '#28a745';
+                    button.style.backgroundColor = '#06402B';
                     button.style.color = 'white';
+                    button.style.borderColor = '#06402B';
                 }
             });
 
             if (selected === correct) {
                 skillScore++;
-                document.getElementById('feedback').innerHTML = `<p style="color: #28a745">Correct! ${explanation}</p>`;
+                document.getElementById('feedback').innerHTML = `<p style="color: #06402B">${explanation}</p>`;
             } else {
-                document.getElementById('feedback').innerHTML = `<p style="color: #dc3545">Incorrect. ${explanation}</p>`;
+                document.getElementById('feedback').innerHTML = `<p style="color: #AF2413">${explanation}</p>`;
             }
 
             document.getElementById('next-skill-button').style.display = 'block';
