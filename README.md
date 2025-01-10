@@ -18,3 +18,15 @@
   - Save user details and lesson progress, which the AI will access to teach and monitor performance
   - Add a prompt search bar, available in all pages, which enables the student to ask any questions relevant to the content being shown.
   - Improvements to the prompts being sent to the API.
+
+### Update 2
+- Deleted JS file and use python now.
+- Frontend finished.
+- Uses flask and python file as backend, and HTML, CSS, JS as frontend.
+### Improvements to make (in order of importance)
+  - Improve frontend stle for "Test your skills" section.
+  - Severly improve "Career resources", with relevant resource links.
+  - Improve the MCQ part to have better questions relevant to the student's learning path.
+  - Save user details and lesson progress, which the AI will access to teach and monitor performance
+  - Add a prompt search bar, available in all pages, which enables the student to ask any questions relevant to the content being shown.
+  - Improvements to the prompts being sent to the API.
