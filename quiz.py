@@ -202,7 +202,10 @@ class CareerAssessment:
                 print("Invalid option. Please select 1 or 2.")
 
 def main():
-    api_key = "AIzaSyC0lHjL55wzQnp_no20DTTzJCNguNeL3Vo"
+    import os
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is required")
     assessment = CareerAssessment(api_key)
     assessment.run_assessment()
 

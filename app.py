@@ -6,7 +6,9 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyC0lHjL55wzQnp_no20DTTzJCNguNeL3Vo")
+api_key = os.environ.get("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is required")
 assessment = CareerAssessment(api_key)
 
 @app.route('/')
