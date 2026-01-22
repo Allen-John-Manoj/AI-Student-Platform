@@ -23,6 +23,8 @@ def generate_questions():
         return jsonify({"error": "User description is required"}), 400
     
     questions = assessment._generate_questions(user_description)
+    if questions is None:
+        return jsonify({"error": "Failed to generate questions. Please try again."}), 500
     return jsonify(questions)
 
 @app.route('/generate-recommendations', methods=['POST'])
@@ -36,6 +38,8 @@ def generate_recommendations():
         return jsonify({"error": "Missing required data"}), 400
     
     recommendations = assessment._generate_recommendations(trait_scores, responses, user_description)
+    if recommendations is None:
+        return jsonify({"error": "Failed to generate recommendations. Please try again."}), 500
     return jsonify(recommendations)
 
 @app.route('/skill-test', methods=['POST'])
@@ -46,7 +50,24 @@ def skill_test():
         return jsonify({"error": "Career title is required"}), 400
     
     questions = assessment._generate_skill_questions(career_title)
+    if questions is None:
+        return jsonify({"error": "Failed to generate skill test. Please try again."}), 500
     return jsonify(questions)
+
+@app.route('/generate-roadmap', methods=['POST'])
+def generate_roadmap():
+    data = request.json
+    career_title = data.get('careerTitle')
+    required_skills = data.get('requiredSkills', [])
+    user_description = data.get('userDescription', '')
+    
+    if not career_title:
+        return jsonify({"error": "Career title is required"}), 400
+    
+    roadmap = assessment._generate_roadmap(career_title, required_skills, user_description)
+    if roadmap is None:
+        return jsonify({"error": "Failed to generate roadmap. Please try again."}), 500
+    return jsonify(roadmap)
 
 @app.after_request
 def add_header(response):

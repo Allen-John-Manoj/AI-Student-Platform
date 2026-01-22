@@ -128,6 +128,47 @@ Return only the JSON, no other text."""
             print(f"Error generating recommendations: {str(e)}")
             return None
 
+    def _generate_roadmap(self, career_title, required_skills, user_description):
+        prompt = f"""Create a detailed career achievement roadmap for becoming a "{career_title}".
+
+User Background: {user_description}
+Required Skills: {json.dumps(required_skills)}
+
+Generate a comprehensive step-by-step career roadmap with 4-5 phases/milestones. Each milestone should include specific actionable tasks.
+
+Return ONLY valid JSON matching this structure:
+{{
+    "milestones": [
+        {{
+            "title": "Phase title (e.g., 'Foundation Building')",
+            "duration": "Estimated time (e.g., '3-6 months')",
+            "description": "Brief description of this phase",
+            "tasks": [
+                "Specific actionable task 1",
+                "Specific actionable task 2",
+                "Specific actionable task 3"
+            ]
+        }}
+    ],
+    "resources": [
+        {{
+            "type": "Course/Book/Certification/Community/Tool",
+            "name": "Resource name or description"
+        }}
+    ]
+}}
+
+Make the roadmap practical, actionable, and tailored to someone starting from the user's background.
+Return only the JSON, no other text."""
+
+        try:
+            text_response = self._call_claude(prompt)
+            text_response = text_response.replace('```json', '').replace('```', '').strip()
+            return json.loads(text_response)
+        except Exception as e:
+            print(f"Error generating roadmap: {str(e)}")
+            return None
+
     def _test_skills(self, career_title):
         skill_questions = self._generate_skill_questions(career_title)
         if not skill_questions:
