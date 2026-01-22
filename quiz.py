@@ -1,59 +1,39 @@
-import google.generativeai as genai
+import anthropic
 import json
-import random
+import os
 
 class CareerAssessment:
-    def __init__(self, api_key):
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model_name="gemini-2.5-flash")
+    def __init__(self):
+        self.client = anthropic.Anthropic(
+            api_key=os.environ.get("AI_INTEGRATIONS_ANTHROPIC_API_KEY"),
+            base_url=os.environ.get("AI_INTEGRATIONS_ANTHROPIC_BASE_URL")
+        )
+        self.model = "claude-sonnet-4-5"
         self.categories = ["analytical", "creative", "social", "practical", "leadership", 
                          "numerical", "verbal", "scientific", "artistic", "theoretical", 
                          "visual", "independent", "structured", "achievement"]
 
+    def _call_claude(self, prompt):
+        message = self.client.messages.create(
+            model=self.model,
+            max_tokens=4096,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        return message.content[0].text
+
     def _generate_questions(self, user_description):
-        prompt = f"""
-        Based on this user description: "{user_description}"
-        Generate a career assessment questionnaire with 9 non-repeating questions across 3 areas. Ensure no two questions are the same:
-        1. Interests
-        2. Academic/Skills
-        3. Workstyle
-        
-        Return ONLY valid JSON matching this structure:
-        {{
-            "areas": {{
-                "interests": {{
-                    "questions": [
-                        {{
-                            "question": "string",
-                            "options": {{
-                                "A": "string",
-                                "B": "string",
-                                "C": "string",
-                                "D": "string"
-                            }},
-                            "category": ["string", "string", "string", "string"]
-                        }}
-                    ]
-                }}
-            }}
-        }}
-        Categories must be from: {self.categories}"""
+        prompt = f"""Based on this user description: "{user_description}"
+Generate a career assessment questionnaire with 9 non-repeating questions across 3 areas. Ensure no two questions are the same:
+1. Interests
+2. Academic/Skills
+3. Workstyle
 
-        try:
-            response = self.model.generate_content(prompt)
-            text_response = response.candidates[0].content.parts[0].text.strip()
-            text_response = text_response.replace('```json', '').replace('```', '').strip()
-            return json.loads(text_response)
-        except Exception as e:
-            print(f"Error generating questions: {str(e)}")
-            return None
-
-    def _generate_skill_questions(self, career_title):
-        prompt = f"""
-        Generate 10 multiple-choice questions for the career path "{career_title}".
-        Each question should have 4 options (A, B, C, D) with one correct answer and an explanation.
-        Return ONLY valid JSON matching this structure:
-        {{
+Return ONLY valid JSON matching this structure:
+{{
+    "areas": {{
+        "interests": {{
             "questions": [
                 {{
                     "question": "string",
@@ -63,15 +43,52 @@ class CareerAssessment:
                         "C": "string",
                         "D": "string"
                     }},
-                    "correct_answer": "A",  // One of A, B, C, or D
-                    "explanation": "string"
+                    "category": ["string", "string", "string", "string"]
                 }}
             ]
-        }}"""
+        }},
+        "academic_skills": {{
+            "questions": [...]
+        }},
+        "workstyle": {{
+            "questions": [...]
+        }}
+    }}
+}}
+Categories must be from: {self.categories}
+Return only the JSON, no other text."""
 
         try:
-            response = self.model.generate_content(prompt)
-            text_response = response.candidates[0].content.parts[0].text.strip()
+            text_response = self._call_claude(prompt)
+            text_response = text_response.replace('```json', '').replace('```', '').strip()
+            return json.loads(text_response)
+        except Exception as e:
+            print(f"Error generating questions: {str(e)}")
+            return None
+
+    def _generate_skill_questions(self, career_title):
+        prompt = f"""Generate 10 multiple-choice questions for the career path "{career_title}".
+Each question should have 4 options (A, B, C, D) with one correct answer and an explanation.
+Return ONLY valid JSON matching this structure:
+{{
+    "questions": [
+        {{
+            "question": "string",
+            "options": {{
+                "A": "string",
+                "B": "string",
+                "C": "string",
+                "D": "string"
+            }},
+            "correct_answer": "A",
+            "explanation": "string"
+        }}
+    ]
+}}
+Return only the JSON, no other text."""
+
+        try:
+            text_response = self._call_claude(prompt)
             text_response = text_response.replace('```json', '').replace('```', '').strip()
             return json.loads(text_response)
         except Exception as e:
@@ -79,33 +96,32 @@ class CareerAssessment:
             return None
 
     def _generate_recommendations(self, trait_scores, responses, user_description):
-        prompt = f"""
-        User Description: {user_description}
-        Trait Scores: {json.dumps(trait_scores, indent=2)}
-        Response Pattern: {json.dumps(responses, indent=2)}
+        prompt = f"""User Description: {user_description}
+Trait Scores: {json.dumps(trait_scores, indent=2)}
+Response Pattern: {json.dumps(responses, indent=2)}
 
-        Generate personalized career recommendations. Return ONLY valid JSON:
+Generate personalized career recommendations. Return ONLY valid JSON:
+{{
+    "career_paths": [
         {{
-            "career_paths": [
-                {{
-                    "title": "string",
-                    "description": "string",
-                    "required_skills": ["string"]
-                }}
-            ],
-            "learning_resources": [
-                {{
-                    "type": "string",
-                    "description": "string",
-                    "where": "string"
-                }}
-            ],
-            "next_steps": ["string"]
-        }}"""
+            "title": "string",
+            "description": "string",
+            "required_skills": ["string"]
+        }}
+    ],
+    "learning_resources": [
+        {{
+            "type": "string",
+            "description": "string",
+            "where": "string"
+        }}
+    ],
+    "next_steps": ["string"]
+}}
+Return only the JSON, no other text."""
 
         try:
-            response = self.model.generate_content(prompt)
-            text_response = response.candidates[0].content.parts[0].text.strip()
+            text_response = self._call_claude(prompt)
             text_response = text_response.replace('```json', '').replace('```', '').strip()
             return json.loads(text_response)
         except Exception as e:
@@ -202,11 +218,7 @@ class CareerAssessment:
                 print("Invalid option. Please select 1 or 2.")
 
 def main():
-    import os
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable is required")
-    assessment = CareerAssessment(api_key)
+    assessment = CareerAssessment()
     assessment.run_assessment()
 
 if __name__ == "__main__":

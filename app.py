@@ -1,15 +1,11 @@
 from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 from quiz import CareerAssessment
-import os
 
 app = Flask(__name__)
 CORS(app)
 
-api_key = os.environ.get("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable is required")
-assessment = CareerAssessment(api_key)
+assessment = CareerAssessment()
 
 @app.route('/')
 def index():
