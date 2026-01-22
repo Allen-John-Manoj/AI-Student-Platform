@@ -1,12 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 from quiz import CareerAssessment
+import os
 
 app = Flask(__name__)
-CORS(app)  # This allows local development with cross-origin requests
+CORS(app)
 
-# Initialize CareerAssessment with your API key
-assessment = CareerAssessment("AIzaSyC0lHjL55wzQnp_no20DTTzJCNguNeL3Vo")
+api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyC0lHjL55wzQnp_no20DTTzJCNguNeL3Vo")
+assessment = CareerAssessment(api_key)
+
+@app.route('/')
+def index():
+    return send_file('quiz.html')
+
+@app.route('/bg.png')
+def background():
+    return send_file('bg.png')
 
 @app.route('/generate-questions', methods=['POST'])
 def generate_questions():
@@ -41,5 +50,10 @@ def skill_test():
     questions = assessment._generate_skill_questions(career_title)
     return jsonify(questions)
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    return response
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)

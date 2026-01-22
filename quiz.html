@@ -368,7 +368,7 @@
 
             showButtonLoading(submitButton);
             try {
-                const response = await fetch('http://localhost:5000/generate-questions', {
+                const response = await fetch('/generate-questions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -457,7 +457,7 @@
             const button = document.querySelector('#next-button');
             showButtonLoading(button);
             try {
-                const response = await fetch('http://localhost:5000/generate-recommendations', {
+                const response = await fetch('/generate-recommendations', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -525,7 +525,7 @@
     showButtonLoading(button);
 
     try {
-        const response = await fetch('http://localhost:5000/skill-test', {
+        const response = await fetch('/skill-test', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
