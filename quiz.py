@@ -5,7 +5,7 @@ import random
 class CareerAssessment:
     def __init__(self, api_key):
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+        self.model = genai.GenerativeModel(model_name="gemini-2.5-flash")
         self.categories = ["analytical", "creative", "social", "practical", "leadership", 
                          "numerical", "verbal", "scientific", "artistic", "theoretical", 
                          "visual", "independent", "structured", "achievement"]
