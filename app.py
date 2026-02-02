@@ -1,3 +1,4 @@
+# Flask application for AI-powered student career assessment platform
 from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 from quiz import CareerAssessment
