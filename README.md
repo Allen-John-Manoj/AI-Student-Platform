@@ -1,4 +1,31 @@
 # AI-Student-Platform
+
+## Getting Started
+
+### Prerequisites
+- Python 3.8 or higher
+- Flask
+- Gemini API key
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Allen-John-Manoj/AI-Student-Platform.git
+   cd AI-Student-Platform
+   ```
+2. Install dependencies:
+   ```bash
+   pip install flask
+   ```
+3. Set up your Gemini API key as an environment variable.
+4. Run the application:
+   ```bash
+   python app.py
+   ```
+5. Open your browser and navigate to `http://localhost:5000`
+
+---
+
 ### Current status
 - Personalized quiz to recommend careers, resources (general), and next steps.
 - Uses Gemini API.
